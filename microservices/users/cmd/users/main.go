@@ -18,8 +18,11 @@ func main() {
 	}
 
 	sm := http.NewServeMux()
-	sm.Handle("/users", svc.UsersHandler(users))
-	sm.Handle("/user", svc.UserHandler(users))
+	sm.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK"))
+	}))
+	sm.Handle("/api/users", svc.UsersHandler(users))
+	sm.Handle("/api/user", svc.UserHandler(users))
 
 	s := &http.Server{
 		Addr:         ":8080",
