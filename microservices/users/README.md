@@ -1,6 +1,5 @@
 ### Using the Users service
 
-
 1. Build your docker image
 ```bash
 docker build -t users-svc:latest .
