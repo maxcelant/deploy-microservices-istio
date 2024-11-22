@@ -7,7 +7,7 @@ docker build -t items-svc:latest .
 
 2. Run your docker container
 ```bash
-docker run -p 8080:8080 -v $(pwd)/db.json:/db.json items-svc:latest
+docker run -p 8081:8081 -v $(pwd)/db.json:/db.json items-svc:latest
 ```
 
 3. Send requests to `/items` or `/item?={n}`
