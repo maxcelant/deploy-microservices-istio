@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/maxcelant/istio-microservice-sample-users/svc"
+	"github.com/maxcelant/istio-microservice-sample-users/internal/svc"
 )
 
 func main() {
