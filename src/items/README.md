@@ -15,7 +15,7 @@ docker build -t items:latest .
 
 2. Run your docker container
 ```bash
-docker run -p 8081:8081 -v $(pwd)/db.json:/db.json items:latest
+docker run -p 8081:8081
 ```
 
 3. Send requests to `/items` or `/item?={n}`

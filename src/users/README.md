@@ -14,7 +14,7 @@ docker build -t users:latest .
 
 2. Run your docker container
 ```bash
-docker run -p 8080:8080 -v $(pwd)/db.json:/db.json users:latest
+docker run -p 8080:8080
 ```
 
 3. Send requests to `/users` or `/user?={n}`

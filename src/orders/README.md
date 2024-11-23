@@ -14,7 +14,7 @@ docker build -t orders:latest .
 
 2. Run your docker container
 ```bash
-docker run -p 8082:8082 -v $(pwd)/db.json:/db.json orders:latest
+docker run -p 8082:8082 
 ```
 
 3. Send requests to `/users` or `/user?={n}`
