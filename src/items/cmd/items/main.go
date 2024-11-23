@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/maxcelant/istio-microservice-sample-items/internal/svc"
+	"github.com/maxcelant/istio-microservice-sample-items/internal/service"
 )
 
 func main() {
 	lg := log.New(os.Stdout, "items ", log.LstdFlags)
-	items, err := svc.LoadItems()
+	items, err := service.LoadItems()
+	itemSvc := service.New(lg, items)
 	if err != nil {
 		lg.Fatalf("Error loading JSON: %v", err)
 	}
@@ -23,8 +24,8 @@ func main() {
 		w.Write([]byte("OK"))
 	}).Methods(http.MethodGet)
 
-	router.HandleFunc("/api/items", svc.ItemsHandler(lg, items)).Methods(http.MethodGet)
-	router.HandleFunc("/api/items/{id}", svc.ItemHandler(lg, items)).Methods(http.MethodGet)
+	router.HandleFunc("/api/items", itemSvc.GetItems()).Methods(http.MethodGet)
+	router.HandleFunc("/api/items/{id}", itemSvc.GetItem()).Methods(http.MethodGet)
 
 	s := &http.Server{
 		Addr:         ":8081",
