@@ -1,4 +1,12 @@
-### Using the Items service
+### Items service
+
+#### Running Locally
+
+```bash
+make run
+```
+
+#### Running with Docker
 
 1. Build your docker image
 ```bash

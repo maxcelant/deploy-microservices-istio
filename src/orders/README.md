@@ -1,5 +1,12 @@
-### Using the Orders service
+### Orders service
 
+#### Running Locally
+
+```bash
+make run
+```
+
+#### Running with Docker
 1. Build your docker image
 ```bash
 docker build -t orders-svc:latest .
