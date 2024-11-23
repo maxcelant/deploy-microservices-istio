@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	lg := log.New(os.Stdout, "orders-svc", log.LstdFlags)
+	lg := log.New(os.Stdout, "orders ", log.LstdFlags)
 	orders, err := svc.LoadOrders()
 	if err != nil {
 		lg.Fatalf("Error loading JSON: %v", err)

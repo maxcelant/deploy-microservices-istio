@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	lg := log.New(os.Stdout, "users-svc ", log.LstdFlags)
+	lg := log.New(os.Stdout, "users ", log.LstdFlags)
 	users, err := svc.LoadUsers()
 	if err != nil {
 		lg.Fatalf("Error loading JSON: %v", err)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"os"
 )
@@ -88,31 +89,28 @@ func (s *OrderService) Create() http.HandlerFunc {
 			return
 		}
 
-		findOrder := func() (Order, bool) {
-			for _, o := range s.orders {
-				if o.UserID == user.ID && o.Status == "OPEN" {
-					order := o
-					return order, true
-				}
+		var order *Order
+		for i, o := range s.orders {
+			if o.UserID == user.ID && o.Status == "OPEN" {
+				order = &s.orders[i]
+				break
 			}
-			return Order{}, false
 		}
 
-		order, ok := findOrder()
-		if !ok {
-			order = Order{
+		if order == nil {
+			newOrder := Order{
 				ID:         len(s.orders) + 1,
 				UserID:     user.ID,
 				Items:      []int{item.ID},
 				TotalPrice: item.Price,
 				Status:     OpenStatus,
 			}
+			s.orders = append(s.orders, newOrder)
+			order = &s.orders[len(s.orders)-1]
 		} else {
 			order.Items = append(order.Items, item.ID)
-			order.TotalPrice += item.Price
+			order.TotalPrice = math.Round((order.TotalPrice+item.Price)*100) / 100
 		}
-
-		s.orders = append(s.orders, order)
 
 		file, err := json.MarshalIndent(s.orders, "", "  ")
 		if err != nil {
@@ -134,7 +132,7 @@ func (s *OrderService) Create() http.HandlerFunc {
 
 func (o *OrderService) GetUser(userID int) (user UserResponse, err error) {
 	o.lg.Printf("Fetching user with ID: %d", userID)
-	resp, err := http.Get(fmt.Sprintf("http://localhost:8080/api/users?id=%d", userID))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:8080/api/users/%d", userID))
 	if err != nil {
 		o.lg.Printf("Error making GET request: %v", err)
 		return user, fmt.Errorf("error making GET request: %v", err)
@@ -156,7 +154,7 @@ func (o *OrderService) GetUser(userID int) (user UserResponse, err error) {
 
 func (o *OrderService) GetItem(itemID int) (item ItemResponse, err error) {
 	o.lg.Printf("Fetching item with ID: %d", itemID)
-	resp, err := http.Get(fmt.Sprintf("http://localhost:8081/api/items?id=%d", itemID))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:8081/api/items/%d", itemID))
 	if err != nil {
 		o.lg.Printf("Error making GET request: %v", err)
 		return item, fmt.Errorf("error making GET request: %v", err)

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	lg := log.New(os.Stdout, "items-svc ", log.LstdFlags)
+	lg := log.New(os.Stdout, "items ", log.LstdFlags)
 	items, err := svc.LoadItems()
 	if err != nil {
 		lg.Fatalf("Error loading JSON: %v", err)

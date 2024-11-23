@@ -2,9 +2,11 @@ package svc
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func UsersHandler(lg *log.Logger, users []User) http.HandlerFunc {
@@ -20,10 +22,20 @@ func UsersHandler(lg *log.Logger, users []User) http.HandlerFunc {
 
 func UserHandler(lg *log.Logger, users []User) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("id")
-		lg.Printf("Handling request for user with ID: %s", id)
+		vars := mux.Vars(r)
+		idStr := vars["id"]
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			lg.Printf("Invalid user ID: %s", idStr)
+			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			return
+		}
+
+		lg.Printf("Handling request for user with ID: %d", id)
+
 		for _, user := range users {
-			if fmt.Sprintf("%d", user.ID) == id {
+			if user.ID == id {
 				w.Header().Set("Content-Type", "application/json")
 				if err := json.NewEncoder(w).Encode(user); err != nil {
 					lg.Printf("Error encoding user: %v", err)
@@ -32,7 +44,8 @@ func UserHandler(lg *log.Logger, users []User) http.HandlerFunc {
 				return
 			}
 		}
-		lg.Printf("User with ID %s not found", id)
+
+		lg.Printf("User with ID %d not found", id)
 		http.Error(w, "User not found", http.StatusNotFound)
 	}
 }

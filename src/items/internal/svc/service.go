@@ -2,9 +2,11 @@ package svc
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func ItemsHandler(lg *log.Logger, items []Item) http.HandlerFunc {
@@ -20,10 +22,20 @@ func ItemsHandler(lg *log.Logger, items []Item) http.HandlerFunc {
 
 func ItemHandler(lg *log.Logger, items []Item) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("id")
-		lg.Printf("Handling request for item ID: %s", id)
+		vars := mux.Vars(r)
+		idStr := vars["id"]
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			lg.Printf("Invalid item ID: %s", idStr)
+			http.Error(w, "Invalid item ID", http.StatusBadRequest)
+			return
+		}
+
+		lg.Printf("Handling request for item ID: %d", id)
+
 		for _, item := range items {
-			if fmt.Sprintf("%d", item.ID) == id {
+			if item.ID == id {
 				w.Header().Set("Content-Type", "application/json")
 				if err := json.NewEncoder(w).Encode(item); err != nil {
 					lg.Printf("Error encoding item: %v", err)
@@ -32,7 +44,8 @@ func ItemHandler(lg *log.Logger, items []Item) http.HandlerFunc {
 				return
 			}
 		}
-		lg.Printf("Item with ID %s not found", id)
+
+		lg.Printf("Item with ID %d not found", id)
 		http.Error(w, "Item not found", http.StatusNotFound)
 	}
 }
