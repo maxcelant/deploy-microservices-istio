@@ -1,3 +1,39 @@
 [
-
+  {
+    "id": 1,
+    "userId": 1,
+    "items": [
+      1
+    ],
+    "totalPrice": 999.99,
+    "status": "OPEN"
+  },
+  {
+    "id": 1,
+    "userId": 1,
+    "items": [
+      1,
+      1
+    ],
+    "totalPrice": 1999.98,
+    "status": "OPEN"
+  },
+  {
+    "id": 3,
+    "userId": 2,
+    "items": [
+      1
+    ],
+    "totalPrice": 999.99,
+    "status": "OPEN"
+  },
+  {
+    "id": 4,
+    "userId": 3,
+    "items": [
+      3
+    ],
+    "totalPrice": 199.99,
+    "status": "OPEN"
+  }
 ]

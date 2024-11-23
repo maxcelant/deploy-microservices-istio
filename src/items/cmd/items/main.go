@@ -20,8 +20,8 @@ func main() {
 	sm.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))
 	}))
-	sm.Handle("/api/items", svc.ItemsHandler(users))
-	sm.Handle("/api/item", svc.ItemHandler(users))
+	sm.Handle("/api/items", svc.ItemsHandler(lg, users))
+	sm.Handle("/api/item", svc.ItemHandler(lg, users))
 
 	s := &http.Server{
 		Addr:         ":8081",

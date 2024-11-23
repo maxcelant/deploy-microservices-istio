@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 type OrderService struct {
@@ -18,6 +19,33 @@ type OrderCreateRequest struct {
 	UserID int `json:"userId"`
 }
 
+type ItemResponse struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	Quantity    int     `json:"quantity"`
+}
+
+type Address struct {
+	Street     string `json:"street"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	PostalCode string `json:"postalCode"`
+	Country    string `json:"country"`
+}
+
+type UserResponse struct {
+	ID          int     `json:"id"`
+	FirstName   string  `json:"firstName"`
+	LastName    string  `json:"lastName"`
+	Email       string  `json:"email"`
+	Username    string  `json:"username"`
+	Password    string  `json:"password"`
+	PhoneNumber string  `json:"phoneNumber"`
+	Address     Address `json:"address"`
+}
+
 func NewOrderService(lg *log.Logger, orders []Order) *OrderService {
 	return &OrderService{
 		lg:     lg,
@@ -25,10 +53,10 @@ func NewOrderService(lg *log.Logger, orders []Order) *OrderService {
 	}
 }
 
-func (o *OrderService) Get() http.HandlerFunc {
+func (s *OrderService) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
-		for _, order := range o.orders {
+		for _, order := range s.orders {
 			if fmt.Sprintf("%d", order.ID) == id {
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(order)
@@ -39,7 +67,7 @@ func (o *OrderService) Get() http.HandlerFunc {
 	}
 }
 
-func (o *OrderService) Create() http.HandlerFunc {
+func (s *OrderService) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var requestBody OrderCreateRequest
 		err := json.NewDecoder(r.Body).Decode(&requestBody)
@@ -48,48 +76,102 @@ func (o *OrderService) Create() http.HandlerFunc {
 			return
 		}
 
-		resp, err := http.Get(fmt.Sprintf("http://localhost:8080/api/user?id=%d", requestBody.UserID))
+		user, err := s.GetUser(requestBody.UserID)
 		if err != nil {
-			log.Fatalf("Error making GET request: %v", err)
-		}
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatalf("Error reading response body: %v", err)
+			http.Error(w, fmt.Sprintf("Error retrieving user: %v", err), http.StatusInternalServerError)
+			return
 		}
 
-		fmt.Printf("Status: %s\n", resp.Status)
-		fmt.Printf("Response: %s\n", string(body))
+		item, err := s.GetItem(requestBody.ItemID)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error retrieving item: %v", err), http.StatusInternalServerError)
+			return
+		}
 
-		// Using the userID, retrieve the user to verify they exist.
-		// Using the itemID, retrieve the item to verify it exists
-		//   And get the price of the item
-		// See if the user already has an OPEN order
-		//   If they do,
-		//      Add this item to their list of items
-		// 	 If they don't
-		//      Create a new order
-		//      Add the item to the list
-		// Update the total order price
-		//
+		findOrder := func() (Order, bool) {
+			for _, o := range s.orders {
+				if o.UserID == user.ID && o.Status == "OPEN" {
+					order := o
+					return order, true
+				}
+			}
+			return Order{}, false
+		}
 
-		// o.orders = append(o.orders, newOrder)
+		order, ok := findOrder()
+		if !ok {
+			order = Order{
+				ID:         len(s.orders) + 1,
+				UserID:     user.ID,
+				Items:      []int{item.ID},
+				TotalPrice: item.Price,
+				Status:     OpenStatus,
+			}
+		} else {
+			order.Items = append(order.Items, item.ID)
+			order.TotalPrice += item.Price
+		}
 
-		// file, err := json.MarshalIndent(o.orders, "", "  ")
-		// if err != nil {
-		// 	http.Error(w, "Error saving order", http.StatusInternalServerError)
-		// 	return
-		// }
+		s.orders = append(s.orders, order)
 
-		// err = os.WriteFile("db.json", file, 0644)
-		// if err != nil {
-		// 	http.Error(w, "Error saving order", http.StatusInternalServerError)
-		// 	return
-		// }
+		file, err := json.MarshalIndent(s.orders, "", "  ")
+		if err != nil {
+			http.Error(w, "Error saving order", http.StatusInternalServerError)
+			return
+		}
 
-		// w.Header().Set("Content-Type", "application/json")
-		// w.WriteHeader(http.StatusCreated)
-		// json.NewEncoder(w).Encode(newOrder)
+		err = os.WriteFile("db.json", file, 0644)
+		if err != nil {
+			http.Error(w, "Error saving order", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(order)
 	}
+}
+
+func (o *OrderService) GetUser(userID int) (user UserResponse, err error) {
+	o.lg.Printf("Fetching user with ID: %d", userID)
+	resp, err := http.Get(fmt.Sprintf("http://localhost:8080/api/user?id=%d", userID))
+	if err != nil {
+		o.lg.Printf("Error making GET request: %v", err)
+		return user, fmt.Errorf("error making GET request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		o.lg.Printf("Error reading response body: %v", err)
+		return user, fmt.Errorf("error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(bytes, &user); err != nil {
+		o.lg.Printf("Failed to unmarshal json: %v", err)
+		return user, fmt.Errorf("failed to unmarshal json: %v", err)
+	}
+	o.lg.Printf("Successfully fetched user: %+v", user)
+	return user, nil
+}
+
+func (o *OrderService) GetItem(itemID int) (item ItemResponse, err error) {
+	o.lg.Printf("Fetching item with ID: %d", itemID)
+	resp, err := http.Get(fmt.Sprintf("http://localhost:8081/api/item?id=%d", itemID))
+	if err != nil {
+		o.lg.Printf("Error making GET request: %v", err)
+		return item, fmt.Errorf("error making GET request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		o.lg.Printf("Error reading response body: %v", err)
+		return item, fmt.Errorf("error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(bytes, &item); err != nil {
+		o.lg.Printf("Failed to unmarshal json: %v", err)
+		return item, fmt.Errorf("failed to unmarshal json: %v", err)
+	}
+	o.lg.Printf("Successfully fetched item: %+v", item)
+	return item, nil
 }
