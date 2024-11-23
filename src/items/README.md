@@ -10,12 +10,12 @@ make run
 
 1. Build your docker image
 ```bash
-docker build -t items-svc:latest .
+docker build -t items:latest .
 ```
 
 2. Run your docker container
 ```bash
-docker run -p 8081:8081 -v $(pwd)/db.json:/db.json items-svc:latest
+docker run -p 8081:8081 -v $(pwd)/db.json:/db.json items:latest
 ```
 
 3. Send requests to `/items` or `/item?={n}`
