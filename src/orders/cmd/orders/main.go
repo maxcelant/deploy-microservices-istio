@@ -6,16 +6,21 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/maxcelant/istio-microservice-sample-orders/internals/cfg"
 	"github.com/maxcelant/istio-microservice-sample-orders/internals/service"
 )
 
 func main() {
 	lg := log.New(os.Stdout, "orders ", log.LstdFlags)
+	config, err := cfg.LoadConfig()
+	if err != nil {
+		lg.Fatalf("failed to load config: %v", err)
+	}
 	orders, err := service.LoadOrders()
 	if err != nil {
 		lg.Fatalf("Error loading JSON: %v", err)
 	}
-	orderSvc := service.NewOrderService(lg, orders)
+	orderSvc := service.NewOrderService(lg, config, orders)
 	router := mux.NewRouter()
 
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

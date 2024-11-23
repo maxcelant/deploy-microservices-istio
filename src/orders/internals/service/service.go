@@ -8,11 +8,14 @@ import (
 	"math"
 	"net/http"
 	"os"
+
+	"github.com/maxcelant/istio-microservice-sample-orders/internals/cfg"
 )
 
 type OrderService struct {
 	lg     *log.Logger
 	orders []Order
+	cfg    *cfg.Config
 }
 
 type OrderCreateRequest struct {
@@ -39,9 +42,10 @@ type UserResponse struct {
 	Address     string `json:"address"`
 }
 
-func NewOrderService(lg *log.Logger, orders []Order) *OrderService {
+func NewOrderService(lg *log.Logger, cfg *cfg.Config, orders []Order) *OrderService {
 	return &OrderService{
 		lg:     lg,
+		cfg:    cfg,
 		orders: orders,
 	}
 }

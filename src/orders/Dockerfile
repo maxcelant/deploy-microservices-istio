@@ -14,6 +14,7 @@ FROM gcr.io/distroless/base-debian11
 WORKDIR /
 
 COPY --from=builder /app/main .
+COPY --from=builder /app/db.json .
 
 EXPOSE 8082
 
