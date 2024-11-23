@@ -128,7 +128,7 @@ func (s *OrderService) Create() http.HandlerFunc {
 
 func (o *OrderService) GetUser(userID int) (user UserResponse, err error) {
 	o.lg.Printf("Fetching user with ID: %d", userID)
-	resp, err := http.Get(fmt.Sprintf("http://localhost:8080/api/users/%d", userID))
+	resp, err := http.Get(fmt.Sprintf("%s/api/users/%d", o.cfg.UserServiceURL, userID))
 	if err != nil {
 		o.lg.Printf("Error making GET request: %v", err)
 		return user, fmt.Errorf("error making GET request: %v", err)
@@ -150,7 +150,7 @@ func (o *OrderService) GetUser(userID int) (user UserResponse, err error) {
 
 func (o *OrderService) GetItem(itemID int) (item ItemResponse, err error) {
 	o.lg.Printf("Fetching item with ID: %d", itemID)
-	resp, err := http.Get(fmt.Sprintf("http://localhost:8081/api/items/%d", itemID))
+	resp, err := http.Get(fmt.Sprintf("%s/api/items/%d", o.cfg.ItemServiceURL, itemID))
 	if err != nil {
 		o.lg.Printf("Error making GET request: %v", err)
 		return item, fmt.Errorf("error making GET request: %v", err)
