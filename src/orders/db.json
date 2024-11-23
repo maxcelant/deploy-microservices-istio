@@ -1,13 +1,3 @@
 [
-  {
-    "id": 1,
-    "userId": 1,
-    "items": [
-      1,
-      2,
-      3
-    ],
-    "totalPrice": 1899.97,
-    "status": "OPEN"
-  }
+
 ]

@@ -28,23 +28,15 @@ type ItemResponse struct {
 	Quantity    int     `json:"quantity"`
 }
 
-type Address struct {
-	Street     string `json:"street"`
-	City       string `json:"city"`
-	State      string `json:"state"`
-	PostalCode string `json:"postalCode"`
-	Country    string `json:"country"`
-}
-
 type UserResponse struct {
-	ID          int     `json:"id"`
-	FirstName   string  `json:"firstName"`
-	LastName    string  `json:"lastName"`
-	Email       string  `json:"email"`
-	Username    string  `json:"username"`
-	Password    string  `json:"password"`
-	PhoneNumber string  `json:"phoneNumber"`
-	Address     Address `json:"address"`
+	ID          int    `json:"id"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Email       string `json:"email"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phoneNumber"`
+	Address     string `json:"address"`
 }
 
 func NewOrderService(lg *log.Logger, orders []Order) *OrderService {
