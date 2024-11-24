@@ -1,4 +1,4 @@
-# Istio Microservice Kubernetes Sample
+# Deploy Microservices in Kubernetes
 
 Quickly deploys three microservices to different environments of your choice. 
 
