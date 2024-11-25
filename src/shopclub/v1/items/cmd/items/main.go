@@ -52,7 +52,7 @@ func main() {
 
 	router.HandleFunc("/api/items", itemService.GetItems()).Methods(http.MethodGet)
 	router.HandleFunc("/api/items", itemService.CreateItem()).Methods(http.MethodPost)
-	// router.HandleFunc("/api/items/{id}", itemService.GetItem()).Methods(http.MethodGet)
+	router.HandleFunc("/api/items/{id}", itemService.GetItemByID()).Methods(http.MethodGet)
 
 	s := &http.Server{
 		Addr:         ":8081",
