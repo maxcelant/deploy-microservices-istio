@@ -55,6 +55,7 @@ func main() {
 	}).Methods("GET")
 	router.HandleFunc("/api/orders/{id}", orderService.GetOrderById()).Methods(http.MethodGet)
 	router.HandleFunc("/api/orders", orderService.CreateOrder()).Methods(http.MethodPost)
+	router.HandleFunc("/api/orders/{id}", orderService.AddItemToOrder()).Methods(http.MethodPost)
 
 	lg.Println("Starting server on port 8082")
 	if err := http.ListenAndServe(":8082", router); err != nil {
