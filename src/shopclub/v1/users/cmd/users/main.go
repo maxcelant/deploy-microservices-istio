@@ -53,6 +53,7 @@ func main() {
 
 	router.HandleFunc("/api/users", userService.GetUsers()).Methods(http.MethodGet)
 	router.HandleFunc("/api/users/{id}", userService.GetUserByID()).Methods(http.MethodGet)
+	router.HandleFunc("/api/users", userService.CreateUser()).Methods(http.MethodPost)
 
 	s := &http.Server{
 		Addr:         ":8080",
