@@ -19,3 +19,14 @@ This is if you want to run each microservice locally on a different port. There 
 3. Using your preferred terminal window manager, start each service in their own window by running `make run`. They are preset to listen on separate ports (8080, 8081, 8082).
 
 4. Make REST calls from your preferred client.
+
+### Running in Docker Network
+If you want to run everything within a containerized shared environment.
+
+1. Make sure you have Docker / Docker Desktop installed on your local machine.
+
+2. Change directory to `deploy/compose`
+
+3. Run `docker compose up`
+
+4. Make REST calls from your preferred client.
