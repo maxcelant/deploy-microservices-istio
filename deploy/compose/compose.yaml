@@ -14,7 +14,9 @@ services:
       - migrate_orders
 
   items:
-    image: items 
+    image: items
+    ports:
+      - "8081:8081"
     environment:
       DATABASE_URL: "postgres://items_user:items_pass@items_db:5432/items_db?sslmode=disable"
     networks:
@@ -25,6 +27,8 @@ services:
 
   users:
     image: users
+    ports:
+      - "8080:8080"
     environment:
       DATABASE_URL: "postgres://users_user:users_pass@users_db:5432/users_db?sslmode=disable"
     networks:
