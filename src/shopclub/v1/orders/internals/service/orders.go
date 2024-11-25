@@ -5,22 +5,28 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 )
 
 type Status string
 
 var (
-	OpenStatus      Status = "OPEN"
+	PendingStatus   Status = "PENDING"
 	CompletedStatus Status = "COMPLETED"
 	CancelledStatus Status = "CANCELLED"
 )
 
 type Order struct {
-	ID         int     `json:"id"`
-	UserID     int     `json:"userId"`
-	Items      []int   `json:"items"`
-	TotalPrice float64 `json:"totalPrice"`
-	Status     Status  `json:"status"`
+	ID        int       `json:"id"`
+	UserID    int       `json:"userId"`
+	OrderDate time.Time `json:"orderDate"`
+	Status    Status    `json:"status"`
+}
+
+type OrderItems struct {
+	OrderID  int `json:"orderId"`
+	ItemID   int `json:"itemId"`
+	Quantity int `json:"quantity"`
 }
 
 func LoadOrders() ([]Order, error) {

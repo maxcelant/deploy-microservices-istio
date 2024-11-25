@@ -34,7 +34,6 @@ func initDB() (*sql.DB, func()) {
 }
 
 func main() {
-
 	db, cleanup := initDB()
 	defer cleanup()
 

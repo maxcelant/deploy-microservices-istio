@@ -1,112 +1,92 @@
 [
   {
-    "id": 1,
     "firstName": "John",
     "lastName": "Doe",
     "email": "john.doe@example.com",
     "username": "johndoe",
     "password": "hashed_password",
     "phoneNumber": "+1234567890",
-    "dateOfBirth": "1990-01-01",
     "address": "123 Main St, Springfield, IL, 62704, USA"
   },
   {
-    "id": 2,
     "firstName": "Jane",
     "lastName": "Smith",
     "email": "jane.smith@example.com",
     "username": "janesmith",
     "password": "hashed_password",
     "phoneNumber": "+1234567891",
-    "dateOfBirth": "1991-02-02",
     "address": "456 Elm St, Springfield, IL, 62705, USA"
   },
   {
-    "id": 3,
     "firstName": "Alice",
     "lastName": "Johnson",
     "email": "alice.johnson@example.com",
     "username": "alicejohnson",
     "password": "hashed_password",
     "phoneNumber": "+1234567892",
-    "dateOfBirth": "1992-03-03",
     "address": "789 Oak St, Springfield, IL, 62706, USA"
   },
   {
-    "id": 4,
     "firstName": "Bob",
     "lastName": "Brown",
     "email": "bob.brown@example.com",
     "username": "bobbrown",
     "password": "hashed_password",
     "phoneNumber": "+1234567893",
-    "dateOfBirth": "1993-04-04",
     "address": "101 Pine St, Springfield, IL, 62707, USA"
   },
   {
-    "id": 5,
     "firstName": "Charlie",
     "lastName": "Davis",
     "email": "charlie.davis@example.com",
     "username": "charliedavis",
     "password": "hashed_password",
     "phoneNumber": "+1234567894",
-    "dateOfBirth": "1994-05-05",
     "address": "202 Maple St, Springfield, IL, 62708, USA"
   },
   {
-    "id": 6,
     "firstName": "David",
     "lastName": "Wilson",
     "email": "david.wilson@example.com",
     "username": "davidwilson",
     "password": "hashed_password",
     "phoneNumber": "+1234567895",
-    "dateOfBirth": "1995-06-06",
     "address": "303 Birch St, Springfield, IL, 62709, USA"
   },
   {
-    "id": 7,
     "firstName": "Eve",
     "lastName": "Martinez",
     "email": "eve.martinez@example.com",
     "username": "evemartinez",
     "password": "hashed_password",
     "phoneNumber": "+1234567896",
-    "dateOfBirth": "1996-07-07",
     "address": "404 Cedar St, Springfield, IL, 62710, USA"
   },
   {
-    "id": 8,
     "firstName": "Frank",
     "lastName": "Garcia",
     "email": "frank.garcia@example.com",
     "username": "frankgarcia",
     "password": "hashed_password",
     "phoneNumber": "+1234567897",
-    "dateOfBirth": "1997-08-08",
     "address": "505 Walnut St, Springfield, IL, 62711, USA"
   },
   {
-    "id": 9,
     "firstName": "Grace",
     "lastName": "Lee",
     "email": "grace.lee@example.com",
     "username": "gracelee",
     "password": "hashed_password",
     "phoneNumber": "+1234567898",
-    "dateOfBirth": "1998-09-09",
     "address": "606 Chestnut St, Springfield, IL, 62712, USA"
   },
   {
-    "id": 10,
     "firstName": "Hank",
     "lastName": "Young",
     "email": "hank.young@example.com",
     "username": "hankyoung",
     "password": "hashed_password",
     "phoneNumber": "+1234567899",
-    "dateOfBirth": "1999-10-10",
     "address": "707 Poplar St, Springfield, IL, 62713, USA"
   }
 ]
