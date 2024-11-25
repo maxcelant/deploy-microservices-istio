@@ -8,14 +8,120 @@ services:
     environment:
       USER_SERVICE_URL: http://users:8080
       ITEM_SERVICE_URL: http://items:8081
+      DATABASE_URL: "postgres://orders_user:orders_pass@orders_db:5432/orders_db?sslmode=disable"
+    depends_on:
+      - orders_db
+      - migrate_orders
+
   items:
     image: items 
+    environment:
+      DATABASE_URL: "postgres://items_user:items_pass@items_db:5432/items_db?sslmode=disable"
     networks:
       - shared
+    depends_on:
+      - items_db
+      - migrate_items
+
   users:
-    image: users 
+    image: users
+    environment:
+      DATABASE_URL: "postgres://users_user:users_pass@users_db:5432/users_db?sslmode=disable"
     networks:
       - shared
-  
+    depends_on:
+      - users_db
+      - migrate_users
+
+  orders_db:
+    image: postgres:15
+    container_name: postgres-orders
+    environment:
+      POSTGRES_USER: orders_user
+      POSTGRES_PASSWORD: orders_pass
+      POSTGRES_DB: orders_db
+    volumes:
+      - orders_db_data:/var/lib/postgresql/data
+      - ./migrations/orders:/migrations
+    networks:
+      - shared
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orders_user -d orders_db -h localhost"]
+      interval: 10s
+      retries: 5
+
+  items_db:
+    image: postgres:15
+    container_name: postgres-items
+    environment:
+      POSTGRES_USER: items_user
+      POSTGRES_PASSWORD: items_pass
+      POSTGRES_DB: items_db
+    volumes:
+      - items_db_data:/var/lib/postgresql/data
+      - ./migrations/items:/migrations
+    networks:
+      - shared
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U items_user -d items_db -h localhost"]
+      interval: 10s
+      retries: 5
+
+  users_db:
+    image: postgres:15
+    container_name: postgres-users
+    environment:
+      POSTGRES_USER: users_user
+      POSTGRES_PASSWORD: users_pass
+      POSTGRES_DB: users_db
+    volumes:
+      - users_db_data:/var/lib/postgresql/data
+      - ./migrations/users:/migrations
+    networks:
+      - shared
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U users_user -d users_db -h localhost"]
+      interval: 10s
+      retries: 5
+
+  migrate_orders:
+    image: migrate/migrate
+    container_name: migrate-orders
+    entrypoint: ["/bin/sh", "-c", "sleep 10; migrate -path=/migrations/orders -database=postgres://orders_user:orders_pass@postgres-orders:5432/orders_db?sslmode=disable up"]
+    depends_on:
+      - orders_db
+    volumes:
+      - ./migrations/orders:/migrations/orders
+    networks:
+      - shared
+
+  migrate_items:
+    image: migrate/migrate
+    container_name: migrate-items
+    entrypoint: ["/bin/sh", "-c", "sleep 10; migrate -path=/migrations/items -database=postgres://items_user:items_pass@postgres-items:5432/items_db?sslmode=disable up"]
+    depends_on:
+      - items_db
+    volumes:
+      - ./migrations/items:/migrations/items
+    networks:
+      - shared
+
+  migrate_users:
+    image: migrate/migrate
+    container_name: migrate-users
+    entrypoint: ["/bin/sh", "-c", "sleep 10; migrate -path=/migrations/users -database=postgres://users_user:users_pass@postgres-users:5432/users_db?sslmode=disable up"]
+    depends_on:
+      - users_db
+    volumes:
+      - ./migrations/users:/migrations/users
+    networks:
+      - shared
+
+volumes:
+  orders_db_data:
+  items_db_data:
+  users_db_data:
+
 networks:
-  shared: {}
+  shared:
+    driver: bridge

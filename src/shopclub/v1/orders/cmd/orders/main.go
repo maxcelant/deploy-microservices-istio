@@ -12,9 +12,8 @@ import (
 	"github.com/maxcelant/istio-microservice-sample-orders/internals/svc"
 )
 
-func initDB() (*sql.DB, func()) {
-	connStr := "postgres://orders_user:orders_pass@localhost:5434/orders_db?sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+func initDB(databaseURL string) (*sql.DB, func()) {
+	db, err := sql.Open("postgres", databaseURL)
 
 	cleanup := func() {
 		db.Close()
@@ -34,7 +33,13 @@ func initDB() (*sql.DB, func()) {
 }
 
 func main() {
-	db, cleanup := initDB()
+	lg := log.New(os.Stdout, "orders ", log.LstdFlags)
+	config, err := cfg.LoadConfig()
+	if err != nil {
+		lg.Fatalf("failed to load config: %v", err)
+	}
+
+	db, cleanup := initDB(config.DatabaseURL)
 	defer cleanup()
 
 	if err := db.Ping(); err != nil {
@@ -42,11 +47,6 @@ func main() {
 		defer cleanup()
 	}
 
-	lg := log.New(os.Stdout, "orders ", log.LstdFlags)
-	config, err := cfg.LoadConfig()
-	if err != nil {
-		lg.Fatalf("failed to load config: %v", err)
-	}
 	orderService := svc.New(db, config, lg)
 	router := mux.NewRouter()
 

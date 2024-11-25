@@ -9,12 +9,12 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"github.com/maxcelant/istio-microservice-sample-items/internal/cfg"
 	"github.com/maxcelant/istio-microservice-sample-items/internal/svc"
 )
 
-func initDB() (*sql.DB, func()) {
-	connStr := "postgres://items_user:items_pass@localhost:5433/items_db?sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+func initDB(databaseURL string) (*sql.DB, func()) {
+	db, err := sql.Open("postgres", databaseURL)
 
 	cleanup := func() {
 		db.Close()
@@ -34,15 +34,15 @@ func initDB() (*sql.DB, func()) {
 }
 
 func main() {
-	db, cleanup := initDB()
-	defer cleanup()
-
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-		defer cleanup()
+	lg := log.New(os.Stdout, "users ", log.LstdFlags)
+	config, err := cfg.LoadConfig()
+	if err != nil {
+		lg.Fatalf("failed to load config: %v", err)
 	}
 
-	lg := log.New(os.Stdout, "items ", log.LstdFlags)
+	db, cleanup := initDB(config.DatabaseURL)
+	defer cleanup()
+
 	itemService := svc.New(db, lg)
 	router := mux.NewRouter()
 
