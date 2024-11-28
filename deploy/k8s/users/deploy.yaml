@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+  labels:
+    app: users
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: users 
+  template:
+    metadata:
+      labels:
+        app: users 
+    spec:
+      containers:
+      - name: users-container
+        image: users:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: DATABASE_URL
+          value: "postgres://users_user:users_pass@users_db:5432/users_db?sslmode=disable"

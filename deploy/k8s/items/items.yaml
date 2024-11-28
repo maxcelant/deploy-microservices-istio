@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: items-deployment
+  labels:
+    app: items
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: items 
+  template:
+    metadata:
+      labels:
+        app: items 
+    spec:
+      containers:
+      - name: items-container
+        image: items:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: DATABASE_URL
+          value: "postgres://items_user:items_pass@items_db:5432/items_db?sslmode=disable"
